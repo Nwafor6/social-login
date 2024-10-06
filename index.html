@@ -1,55 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head></head>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Login Example</title>
+  </head>
   <body>
-
     <h2>Add Facebook Login to your webpage</h2>
+    <button onclick="loginWithFacebook()">Login with Facebook</button>
+    <p id="profile"></p>
 
-      <!-- Set the element id for the JSON response -->
-    
-      <p id="profile"></p>
+    <script>
+      // Load the SDK asynchronously
+      (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
 
-      <script>
-  
-        <!-- Add the Facebook SDK for Javascript -->
-  
-        (function(d, s, id){
-                              var js, fjs = d.getElementsByTagName(s)[0];
-                              if (d.getElementById(id)) {return;}
-                              js = d.createElement(s); js.id = id;
-                              js.src = "https://connect.facebook.net/en_US/sdk.js";
-                              fjs.parentNode.insertBefore(js, fjs);
-                            }(document, 'script', 'facebook-jssdk')
-        );
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '1223282645462297',
+          cookie     : true,
+          xfbml      : true,
+          version    : 'v19.0'
+        });
+      };
 
-
-        window.fbAsyncInit = function() {
-            //Initialize the SDK with your app and the Graph API version for your app -->
-            FB.init({
-                      appId            : '1223282645462297',
-                      xfbml            : true,
-                      version          : 'v19.0'
-                    });
-            // If you are logged in, automatically get your name and email adress, your public profile information 
-            FB.login(function(response) {
-                      if (response.authResponse) {
-                           console.log('Welcome!  Fetching your information.... ');
-                           FB.api('/me', {fields: 'name, email'}, function(response) {
-                               document.getElementById("profile").innerHTML = "Good to see you, " + response.name + ". i see your email address is " + response.email
-                               console.log(response, "helloooo")
-                           });
-                      } else { 
-                           //If you are not logged in, the login dialog will open for you to login asking for permission to get your public profile and email -->
-                           console.log('User cancelled login or did not fully authorize.'); }
+      function loginWithFacebook() {
+        FB.login(function(response) {
+          if (response.authResponse) {
+            console.log('Welcome! Fetching your information....', response.authResponse.accessToken            );
+            FB.api('/me', {fields: 'name, email'}, function(response) {
+              console.log('Good to see you, ' + response.name + '.');
+              console.log('Email: ' + response.email);
+              document.getElementById("profile").innerHTML = "Good to see you, " + response.name + ". Your email address is " + response.email;
             });
-                FB.getLoginStatus(function(response) {
-                if (response.status === 'connected') {
-                    console.log(response.authResponse.accessToken, "tokennnnnnn");
-                }
-            });
-        };
-
-      </script>
-
+          } else {
+            console.log('User cancelled login or did not fully authorize.');
+          }
+        }, {scope: 'public_profile,email'}); // Add email to the scope
+      }
+    </script>
   </body>
 </html>
